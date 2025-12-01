@@ -1,4 +1,6 @@
-import Image from "next/image";
+'use client';
+
+import { useEffect, useRef } from "react";
 import Node from "./components/Node";
 
 const adjacencyList = {
@@ -13,13 +15,17 @@ const adjacencyList = {
 };
 
 export default function Home() {
-  const nodeA = <Node id='A' />;
-  // I want the coordinates of nodeA here
-  console.log(nodeA.getBoundingClientRect());
+  const nodeARef = useRef(null);
+
+  useEffect(() => {
+    if (nodeARef.current) {
+      console.log(nodeARef.current.getBoundingClientRect());
+    }
+  }, []);  
   return (
     <div id='graph'>
       <div className="row">
-        <Node id='A' />
+        <Node id='A' ref={nodeARef}/>
         <Node id='D' />
         <Node id='G' />
       </div>

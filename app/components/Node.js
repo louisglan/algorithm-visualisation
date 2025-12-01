@@ -1,7 +1,8 @@
-export default function Node({ id }) {
+import React from 'react';
+export default function Node({ id, ref }) {
   return (
-    <div id={id} className="node">
+    <div ref={ref} className="node">
       {id}
     </div>
   );
-}
+};
