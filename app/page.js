@@ -16,23 +16,21 @@ const adjacencyList = {
 };
 
 export default function Home() {
-
+  // This allows us to colour our nodes by passing the inspected node into our nodes and colouring dynamically
   const [inspectedNode, setInspectedNode] = useState("A")
 
-  function setLineColor(key, color) {
-    setLines(prev => prev.map(l => l.key === key ? { ...l, color } : l));
-  }
-  // ids driven by your adjacency list
+  // ids corresponding to nodes. We need useMemo to cache the return value to prevent continuous rerenders in useLayoutEffect 
+  // (ids are used in useLayoutEffect - this is a silly React thing don't worry too much about it)
   const ids = useMemo(() => Object.keys(adjacencyList), []);
 
   // programmatic refs for each id (stable because of useMemo)
   const nodeRefs = useMemo(() => {
     const map = {};
-    ids.forEach(id => (map[id] = createRef()));
+    ids.forEach(id => (map[id] = createRef())); // createRef is an alternative to useRef that can be used in callbacks - it allows us to create refs dyanmically for each node
     return map;
   }, [ids]);
 
-  // layout of nodes (still concise)
+  // layout of nodes
   const rows = [
     ['A', 'D', 'G'],
     ['C', 'F'],
@@ -57,7 +55,7 @@ export default function Home() {
         centers[id] = { x: r.left + r.width / 2, y: r.top + r.height / 2 };
       });
 
-      // unique edges (start < end to avoid duplicates)
+      // unique edges (start < end to avoid duplicates that we have due to adjacency list being multidirectional)
       const out = [];
       for (const start of ids) {
         for (const end of adjacencyList[start]) {
@@ -74,10 +72,11 @@ export default function Home() {
       }
 
       setLines(out);
+      // This is testing that we can change our coloured node after three seconds - it works. We will be able to use this for our bfs
       setTimeout(() => setInspectedNode("C"), 3000)
     }
 
-    // wait until all nodes have mounted (DOM refs populated)
+    // wait until all nodes have mounted (DOM refs populated). Ignore this
     function tryInit() {
       if (!mounted) return;
       if (!allReady()) {
@@ -110,8 +109,8 @@ export default function Home() {
         </div>
       ))}
 
-      {lines.map((l) => (
-        <Line key={`${l.start}-${l.end}`} line={l} />
+      {lines.map((line) => (
+        <Line key={`${line.start}-${line.end}`} line={line} />
       ))}
     </div>
   );
