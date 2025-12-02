@@ -17,10 +17,10 @@ export default function Line({line, offset}) {
         >
           <line
             x1={line.x1}
-            y1={line.y1 - offset.ay1 + 10}
+            y1={line.y1}
             x2={line.x2}
-            y2={line.y2 - offset.ay1 + 10}
-            stroke="red"
+            y2={line.y2}
+            stroke={line.color}
             strokeWidth="2"
           />
         </svg>
