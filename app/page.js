@@ -1,6 +1,7 @@
 'use client';
 
 import { useLayoutEffect, useMemo, useState, createRef } from "react";
+import findShortestRoute from "./bfs";
 import Node from "./components/Node";
 import Line from "./components/Line"
 
@@ -17,7 +18,8 @@ const adjacencyList = {
 
 export default function Home() {
   // This allows us to colour our nodes by passing the inspected node into our nodes and colouring dynamically
-  const [inspectedNode, setInspectedNode] = useState("A")
+  const [currentNode, setCurrentNode] = useState("A")
+  const [queuedNode, setQueuedNode] = useState("B")
 
   // ids corresponding to nodes. We need useMemo to cache the return value to prevent continuous rerenders in useLayoutEffect 
   // (ids are used in useLayoutEffect - this is a silly React thing don't worry too much about it)
@@ -72,8 +74,7 @@ export default function Home() {
       }
 
       setLines(out);
-      // This is testing that we can change our coloured node after three seconds - it works. We will be able to use this for our bfs
-      setTimeout(() => setInspectedNode("C"), 3000)
+      findShortestRoute(adjacencyList, "A", "H", setCurrentNode, setQueuedNode)
     }
 
     // wait until all nodes have mounted (DOM refs populated). Ignore this
@@ -105,7 +106,7 @@ export default function Home() {
     <div id='graph'>
       {rows.map((row, i) => (
         <div className="row" key={i}>
-          {row.map((id) => <Node id={id} key={id} reference={nodeRefs[id]} inspectedNode={inspectedNode}/>)}
+          {row.map((id) => <Node id={id} key={id} reference={nodeRefs[id]} currentNode={currentNode} queuedNode={queuedNode}/>)}
         </div>
       ))}
 

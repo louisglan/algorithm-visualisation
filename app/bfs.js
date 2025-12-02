@@ -1,5 +1,5 @@
 // Define a function to find the shortest route using BFS
-function findShortestRoute(adjacencyList, startNode, endNode) {
+async function findShortestRoute(adjacencyList, startNode, endNode, setCurrentNode, setQueuedNode) {
     // Create an object to store parent relationships (similar to HashMap in Java)
     const parents = {};
     parents[startNode] = null; // Start node has no parent
@@ -18,6 +18,9 @@ function findShortestRoute(adjacencyList, startNode, endNode) {
  
         // If we've already visited this node, skip it
         if (visitedPositions.includes(currentNode)) continue;
+
+        await wait(1)
+        setCurrentNode(currentNode)
  
         // Mark the current node as visited
         visitedPositions.push(currentNode);
@@ -31,6 +34,8 @@ function findShortestRoute(adjacencyList, startNode, endNode) {
         for (const neighbour of adjacencyList[currentNode]) {
             // If neighbor hasn't been visited, add it to the queue and set its parent
             if (!visitedPositions.includes(neighbour)) {
+                await wait(1)
+                setQueuedNode(neighbour)
                 queue.push(neighbour);
                 if (!(neighbour in parents)) {
                     parents[neighbour] = currentNode;
@@ -42,6 +47,12 @@ function findShortestRoute(adjacencyList, startNode, endNode) {
     // If no route found, return an empty array
     return [];
 }
+
+function wait(seconds) {
+   return new Promise(resolve => {
+      setTimeout(resolve, seconds * 1000);
+   });
+} 
  
 // Helper function to reconstruct the route from parents
 function getRoute(currentNode, parents) {
@@ -94,6 +105,6 @@ const adjacencyList = {
  
  
 // Test the function
-console.log(findShortestRoute(adjacencyList, 'A', 'H'));
+// console.log(findShortestRoute(adjacencyList, 'A', 'H'));
  
- 
+ export default findShortestRoute
