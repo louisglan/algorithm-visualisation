@@ -20,6 +20,14 @@ export default function Home() {
   // This allows us to colour our nodes by passing the inspected node into our nodes and colouring dynamically
   const [currentNode, setCurrentNode] = useState("A")
   const [queuedNode, setQueuedNode] = useState("B")
+  const [currentLine, setCurrentLine] = useState(["A", "B"])
+  const [queue, setQueue] = useState([])
+  const [visitedPositions, setVisitedPositions] = useState([])
+  const [parents, setParents] = useState({})
+  const [startNode, setStartNode] = useState("A")
+  const [endNode, setEndNode] = useState("H")
+  const [routeNodes, setRouteNodes] = useState([])
+  const [isPaused, setIsPaused] = useState(false);
 
   // ids corresponding to nodes. We need useMemo to cache the return value to prevent continuous rerenders in useLayoutEffect 
   // (ids are used in useLayoutEffect - this is a silly React thing don't worry too much about it)
@@ -74,7 +82,6 @@ export default function Home() {
       }
 
       setLines(out);
-      findShortestRoute(adjacencyList, "A", "H", setCurrentNode, setQueuedNode)
     }
 
     // wait until all nodes have mounted (DOM refs populated). Ignore this
@@ -106,13 +113,37 @@ export default function Home() {
     <div id='graph'>
       {rows.map((row, i) => (
         <div className="row" key={i}>
-          {row.map((id) => <Node id={id} key={id} reference={nodeRefs[id]} currentNode={currentNode} queuedNode={queuedNode}/>)}
+          {row.map((id) => <Node id={id} key={id} reference={nodeRefs[id]} currentNode={currentNode} queuedNode={queuedNode} routeNodes={routeNodes}/>)}
         </div>
       ))}
 
       {lines.map((line) => (
-        <Line key={`${line.start}-${line.end}`} line={line} />
+        <Line key={`${line.start}-${line.end}`} line={line} currentLine={currentLine}/>
       ))}
+      <div className="controls">
+        <label>
+          Start point: <input name="startPoint" value={startNode} onChange={e => setStartNode(e.target.value)}/>
+        </label>
+        <label>
+          End point: <input name="endPoint" value={endNode} onChange={e => setEndNode(e.target.value)}/>
+        </label>
+          <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" onClick={() => findShortestRoute(adjacencyList, startNode, endNode, isPaused, setCurrentNode, setQueuedNode, setCurrentLine, setQueue, setVisitedPositions, setParents, setRouteNodes)}>Start</button>
+          <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" onClick={() => setIsPaused(false)}>Next</button>
+      </div>
+      <div className="metadata">
+        <div>
+          <h1>Visited Positions</h1>
+          <ul>{visitedPositions.map((visitedPosition, i) => <li key={i}>{visitedPosition}</li>)}</ul>
+        </div>
+        <div>
+          <h1>Queue</h1>
+          <ul>{queue.map((queueEl, i) => <li key={i}>{queueEl}</li>)}</ul>
+        </div>
+        <div>
+          <h1>Parents</h1>
+          <ul>{Object.keys(parents).map((node, i) => <li key={i}>{node}: {parents[node] ?? "No parent"}</li>)}</ul>
+        </div>
+      </div>
     </div>
   );
 }

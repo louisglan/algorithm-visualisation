@@ -1,4 +1,4 @@
-export default function Line({line, offset}) {
+export default function Line({line, currentLine}) {
     // ensure the svg is a full-screen overlay and above nodes
     return (
         <svg
@@ -12,7 +12,8 @@ export default function Line({line, offset}) {
             height: '100vh',
             pointerEvents: 'none',
             zIndex: 9999,
-            overflow: 'visible'
+            overflow: 'visible',
+            zIndex: -1
           }}
         >
           <line
@@ -20,7 +21,7 @@ export default function Line({line, offset}) {
             y1={line.y1}
             x2={line.x2}
             y2={line.y2}
-            stroke={line.color}
+            stroke={currentLine.includes(line.start) && currentLine.includes(line.end) ? "blue" : line.color}
             strokeWidth="2"
           />
         </svg>
